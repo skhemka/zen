@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 from address.models import AddressField
 
@@ -14,6 +15,14 @@ class Location(models.Model):
     address = AddressField()
     time_to_campus = models.IntegerField(null=True, blank=True)
 
+class Consumer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+class Producer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    organization = models.CharField(max_length=200)
+    on_campus = models.BooleanField()
+
 class Event(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -23,14 +32,6 @@ class Event(models.Model):
     categories = models.ManyToManyField(Category)
     location = models.ForeignKey(Location,on_delete=models.PROTECT)
     producer = models.ForeignKey(Producer,on_delete=models.PROTECT)
-
-class Consumer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-class Producer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    organization = models.CharField(max_length=200)
-    on_campus = models.BooleanField()
 
 class Preference(models.Model):
     # user -> {category: weight}
@@ -43,7 +44,7 @@ class Preference(models.Model):
 
 class Subscription(models.Model):
     #if errors of lenght occur check here
-    url = models.URLField(max_lenght=400)
+    url = models.URLField(max_length=400)
     consumer = models.ForeignKey(Consumer,on_delete=models.CASCADE)
 
 #calendar is not here because the data is never stored on the app
