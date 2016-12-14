@@ -25,13 +25,14 @@ class Producer(models.Model):
 
 class Event(models.Model):
     name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    image = models.URLField()
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    duration = models.IntegerField(default=0)
-    categories = models.ManyToManyField(Category)
-    location = models.ForeignKey(Location,on_delete=models.PROTECT)
-    producer = models.ForeignKey(Producer,on_delete=models.PROTECT)
+    location = models.CharField(max_length=200)
+    body = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
 
 class Preference(models.Model):
     # user -> {category: weight}
