@@ -11,7 +11,7 @@ from oauth2client.file import Storage
 class GoogleSheetHandler:
 
     def __init__(self):
-        self.SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        self.SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
         self.CLIENT_SECRET_FILE = 'client_secret.json'
         self.APPLICATION_NAME = 'Google Sheets API Python Quickstart'
         try:
@@ -72,13 +72,38 @@ class GoogleSheetHandler:
                 # Print columns A, C, and D
                 print('%s, %s, %s' % (row[0], row[2], row[3]))
 
-    def write_sheet(self, sheetid):
-
+    def write_sheet(self, sheetid, vals):
+        credentials = self.get_credentials()
+        http = credentials.authorize(httplib2.Http())
+        discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                        'version=v4')
+        service = discovery.build('sheets', 'v4', http=http,
+                                  discoveryServiceUrl=discoveryUrl)
+        rangeName = 'Sheet1!A2:F'
+        body = {
+            "includeValuesInResponse": False,
+            "data": [
+                {
+                    "range": rangeName,
+                    "values": vals,
+                    "majorDimension": "ROWS"
+                }
+            ],
+            "valueInputOption": "USER_ENTERED"
+        }
+        result = service.spreadsheets().values().batchUpdate(
+            spreadsheetId=sheetid, body=body).execute()
+        # values = result.get('values', [])
 
 
 def main():
     gh = GoogleSheetHandler()
     gh.read_sheet("1CAqx8xH81opQ1jJsa2a_dY8hzbWPG9kouUIvQWROM3I")
+    gh.write_sheet("1nb5wKk78xEReSKxjw6P0pe_tCRqhwh6-krjqpkuAVX4", [
+                        [1,2,3,4],
+                        [5,6,7,8],
+                        [9,10,11,12]
+                    ])
 
 
 if __name__ == '__main__':
