@@ -14,6 +14,7 @@ class GoogleSheetHandler:
         self.SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
         self.CLIENT_SECRET_FILE = 'client_secret.json'
         self.APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+        self.content_list = []
         try:
             import argparse
             self.flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -67,10 +68,14 @@ class GoogleSheetHandler:
         if not values:
             print('No data found.')
         else:
-            print('Name, Time, Day:')
+            # print('Name, Time, Day:')
             for row in values:
+                self.content_list.append(row)
                 # Print columns A, C, and D
-                print('%s, %s, %s' % (row[0], row[2], row[3]))
+                # print('%s, %s, %s' % (row[0], row[2], row[3]))
+
+    def get_content_list(self):
+        return self.content_list
 
     def write_sheet(self, sheetid, vals):
         credentials = self.get_credentials()
@@ -99,6 +104,7 @@ class GoogleSheetHandler:
 def main():
     gh = GoogleSheetHandler()
     gh.read_sheet("1CAqx8xH81opQ1jJsa2a_dY8hzbWPG9kouUIvQWROM3I")
+    print(gh.get_content_list())
     gh.write_sheet("1nb5wKk78xEReSKxjw6P0pe_tCRqhwh6-krjqpkuAVX4", [
                         [1,2,3,4],
                         [5,6,7,8],

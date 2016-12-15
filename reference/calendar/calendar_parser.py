@@ -14,8 +14,8 @@ class CalendarParser:
         gcal = Calendar.from_ical(f.read())
         for component in gcal.walk():
             if component.name == "VEVENT":
-                temp_start = vDatetime.from_ical(component.get("dtstart"))
-                temp_end = vDatetime.from_ical(component.get("dtend"))
+                temp_start = component.get("dtstart").dt
+                temp_end = component.get("dtend").dt
                 self.calendar_events.append((temp_start, temp_end))
         f.close()
 
@@ -30,3 +30,11 @@ class CalendarParser:
         return True
 
 
+def main():
+    c = CalendarParser("/Users/Derek/Desktop/Courses.ics")
+    print c.calendar_events
+    print(c.check_event_availability(datetime(2016,1,11,15,0), datetime(2016,1,11,15,10)))
+    print datetime(2016,1,11,15,0).time()
+
+if __name__ == '__main__':
+    main()
