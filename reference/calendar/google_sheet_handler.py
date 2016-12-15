@@ -10,9 +10,7 @@ from oauth2client.file import Storage
 
 class GoogleSheetHandler:
 
-    def __init__(self, link_read, link_write):
-        self.link_read = link_read
-        self.link_write = link_write
+    def __init__(self):
         self.SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
         self.CLIENT_SECRET_FILE = 'client_secret.json'
         self.APPLICATION_NAME = 'Google Sheets API Python Quickstart'
@@ -47,3 +45,41 @@ class GoogleSheetHandler:
                 credentials = tools.run(flow, store)
             print('Storing credentials to ' + credential_path)
         return credentials
+
+    def read_sheet(self, sheetid):
+        """Shows basic usage of the Sheets API.
+
+        Creates a Sheets API service object and prints the names and majors of
+        students in a sample spreadsheet:
+        https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+        """
+        credentials = self.get_credentials()
+        http = credentials.authorize(httplib2.Http())
+        discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                        'version=v4')
+        service = discovery.build('sheets', 'v4', http=http,
+                                  discoveryServiceUrl=discoveryUrl)
+        rangeName = 'Sheet1!A2:F'
+        result = service.spreadsheets().values().get(
+            spreadsheetId=sheetid, range=rangeName).execute()
+        values = result.get('values', [])
+
+        if not values:
+            print('No data found.')
+        else:
+            print('Name, Time, Day:')
+            for row in values:
+                # Print columns A, C, and D
+                print('%s, %s, %s' % (row[0], row[2], row[3]))
+
+    def write_sheet(self, sheetid):
+
+
+
+def main():
+    gh = GoogleSheetHandler()
+    gh.read_sheet("1CAqx8xH81opQ1jJsa2a_dY8hzbWPG9kouUIvQWROM3I")
+
+
+if __name__ == '__main__':
+    main()
