@@ -1,5 +1,6 @@
 from icalendar import Calendar, vDatetime
 from datetime import datetime
+import pytz
 
 
 class CalendarParser:
@@ -21,13 +22,19 @@ class CalendarParser:
 
     def check_event_availability(self, event_start, event_end):
         for start, end in self.calendar_events:
+            start = start.replace(tzinfo=pytz.timezone('US/Eastern'))
+            end = end.replace(tzinfo=pytz.timezone('US/Eastern'))
+            if event_start < end <= event_end:
+                print "*******"
+            print start, end, event_start, event_end
             if event_start <= start < event_end:
                 return False
             elif event_start >= start and event_end <= end:
                 return False
-            elif event_start < end <= event_end:
+            elif event_start < end >= event_end:
                 return False
-        return True
+        else:
+            return True
 
 
 def main():
